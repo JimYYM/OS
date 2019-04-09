@@ -1,4 +1,59 @@
+//this method is luanched when the quere is full, project/assignment can't put in quere. 
+//eg. project replace revision/meetings
+//eg. assignment replace revision/meetings
 
+int priorityReplacing1(struct task quereArray[][totalActivitiesCount],int quereIndexArray[],int remainingHours, struct task activity,int startDate[],int numOfTimeSlot){
+	int i,j,k;
+	struct task temp;
+	printf("who am i %s\n",activity.activityName );
+	//find meeting slot
+	for(i=0;i<=activity.day-startDate[2];i++){//loop in quereArray 
+		for(j=0;j<numOfTimeSlot;j++){
+			if(quereArray[i][j].activityType==4){//replace the meetings slot first
+				printf("change from %s\n",quereArray[i][j].activityName );
+				percentageOfCompletion[quereArray[i][j].activityId-1]=1;//reject
+				temp=quereArray[i][j];
+				quereArray[i][j]=activity;//replace it with project/
+				remainingHours--;
+
+			}
+			if (remainingHours==0){
+				for(k=j+1;k<numOfTimeSlot;k++){
+					if(quereArray[i][k].activityId==temp.activityId){
+						quereArray[i][k]=emptySlot;
+					}
+				}
+				return 0;
+			}
+		}
+	}
+	//find revision slot
+	for(i=0;i<=activity.day-startDate[2];i++){//loop in quereArray 
+		for(j=0;j<numOfTimeSlot;j++){
+			if(quereArray[i][j].activityType==3){//replace the revision slot 
+				printf("change from %s\n",quereArray[i][j].activityName );
+				printf("here %d\n", i);
+				percentageOfCompletion[quereArray[i][j].activityId-1]=1;//reject
+				temp=quereArray[i][j];
+				quereArray[i][j]=activity;//replace it with project/assignment
+				remainingHours--;
+
+			}
+			if (remainingHours==0){
+				for(k=j+1;k<numOfTimeSlot;k++){
+					if(quereArray[i][k].activityId==temp.activityId){
+						quereArray[i][k]=emptySlot;
+					}
+				}
+				return 0;
+			}
+		}
+	}
+	if(remainingHours>0){	//if the project.assignment can't put in quere at the end
+		percentageOfCompletion[activity.activityId-1]-=remainingHours;	//deduct the %ofCompletion
+	}
+	return 0;
+}
 // check if activity is valid or not
 // if not valid{
 // 		totalActivitiesCount--,
@@ -15,10 +70,6 @@ int discardInvalidActivity(struct task inValidActivity){
 			totalActivitiesCount--;
 		}
 	}
-	for(i=0;i<totalActivitiesCount;i++){
-		printf("%s\n", allActivities[i].activityName);
-	}
-	
 }
 //check if the activity is valid or not
 //if not, delete it from allActivities table.
@@ -43,12 +94,8 @@ int activityValidCheck(int numOfTimeSlot,int startTime,int endTime,int startDate
 					printf("report %s invalid: time crash\n",allActivities[i].activityName );
 					//delete added invalid activity
 					index=1;
-					if(fakeTimeTable[x-1][y-index].activityId==allActivities[i].activityId){
-						printf("true\n");
-					}
 					while(fakeTimeTable[x-1][y-index].activityId==allActivities[i].activityId){
 						fakeTimeTable[x-1][y-index]=emptySlot;
-						printf("  %s\n", fakeTimeTable[x][y-index].activityName);
 						index++;
 					}
 					
@@ -56,15 +103,16 @@ int activityValidCheck(int numOfTimeSlot,int startTime,int endTime,int startDate
 					i--;//becaue the allActivities is changed 
 					break;
 				}
-				if(allActivities[i].hour+allActivities[i].duration>endTime){//duration
-					printf("report %s invalid: exceed time limit\n",allActivities[i].activityName );
-					discardInvalidActivity(allActivities[i]);
-					i--;//becaue the allActivities is changed 
-					break;
-				}
 				//add to faketable if activity has no problem,then continue checking
 				fakeTimeTable[x-1][y]=allActivities[i];
-			}		
+			}
+			//duration check
+			if(allActivities[i].hour+allActivities[i].duration>endTime){
+				printf("report %s invalid: exceed time limit\n",allActivities[i].activityName );
+				discardInvalidActivity(allActivities[i]);
+				i--;//becaue the allActivities is changed 
+
+			}
 		}
 	}
 	
