@@ -1,4 +1,4 @@
-
+//meeting is activity,activity is task
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -148,7 +148,7 @@ int main(int argc, char *argv[]){
 	int endTime=23;//change this line if used other test case
 	numOfTimeSlot=endTime-startTime;
 	int totalDayCount=calculateTwoDateDistance(startDate[0],startDate[1],startDate[2],endDate[0],endDate[1],endDate[2]);
-	int tableSizeArray[totalDayCount];
+	int tableSizeArray[totalDayCount];//tableSizeArray is the  no. of task inside timetable
 
 	//activity valid check
 	int i,j,x;struct task hold;
@@ -242,6 +242,7 @@ int main(int argc, char *argv[]){
 	int arrayIndex;
 	int remainingHours;
 	//init slotIndexArray
+	//slotIndexArray is the next index of timetable available to put task
 	int slotIndexArray[totalDayCount];
 	for(i=0;i<totalDayCount;i++){
 		slotIndexArray[i]=0;
